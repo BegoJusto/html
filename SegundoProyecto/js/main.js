@@ -4,8 +4,8 @@ var nombres = new Array();
 nombres['45751880G'] = "Imanol";
 nombres['16087431N'] = "Marta";
 var apellidos = new Array();
-apellidos["45751880G"] = "jimenez lopez";
-apellidos["16087431N"] = "rivera del amo";
+apellidos["45751880G"] = "Jimenez Lopez";
+apellidos["16087431N"] = "Rivera del Amo";
 var nUF1841 = new Array();
 nUF1841['45751880G'] = 6;
 nUF1841['16087431N'] = 7;
@@ -24,7 +24,7 @@ nUF1845['16087431N'] = 5;
 var nUF1846 = new Array();
 nUF1846['45751880G'] = 4;
 nUF1846['16087431N'] = 4;
-var
+
 
 jQuery(document).ready(function($) {
     function cargarAlumnos() {
@@ -33,20 +33,21 @@ jQuery(document).ready(function($) {
             var dni = dnies[i];
             var nombre = nombres[dni];
             var apellido = apellidos[dni];
-            var notaMedia = parseFloat((nUF1841[dni] + nUF1842[dni] + nUF1843[dni] + nUF1844[dni] + nUF1845[dni] + nUF1846[dni]) / 6).toFixed(2);
-            var html_text = "<tr>" +
+           // var notaMedia = parseFloat((nUF1841[dni] + nUF1842[dni] + nUF1843[dni] + nUF1844[dni] + nUF1845[dni] + nUF1846[dni]) / 6).toFixed(2);
+            var html_text =
                 "<tr>" +
-                "<td align='center'><input type='checkbox' value='" + dni + "'/></td>" +
-                "<td>" + nombre + "</td>" +
-                "<td>" + apellido + "</td>" +
-                "<td>" + nUF1841[dni] + "</td>" +
-                "<td>" + nUF1842[dni] + "</td>" +
-                "<td>" + nUF1843[dni] + "</td>" +
-                "<td>" + nUF1844[dni] + "</td>" +
-                "<td>" + nUF1845[dni] + "</td>" +
-                "<td>" + nUF1846[dni] + "</td>" +
-                "<td>" + notaMedia + "</td>" +
-                "<td align='center'><button>Editar</button></td>" +
+                    "<td align='center'><input type='checkbox' value='" + dni + "'/></td>" +
+                    "<td>" + nombre + "</td>" +
+                    "<td>" + apellido + "</td>" +
+                    "<td>" + nUF1841[dni] + "</td>" +
+                    "<td>" + nUF1842[dni] + "</td>" +
+                    "<td>" + nUF1843[dni] + "</td>" +
+                    "<td>" + nUF1844[dni] + "</td>" +
+                    "<td>" + nUF1845[dni] + "</td>" +
+                    "<td>" + nUF1846[dni] + "</td>" +
+                    "<td id='media'>" + calcularMedia([nUF1841[dni], nUF1842[dni], nUF1843[dni], nUF1844[dni], nUF1845[dni], nUF1846[dni]]) + "</td>" +
+                /*      "<td>" + notaMedia + "</td>" +*/
+                    "<td align='center'><button>Editar</button></td>" +
                 "</tr>";
             $('#listado-alumnos tbody').append(html_text);
         }
@@ -54,10 +55,10 @@ jQuery(document).ready(function($) {
     }
 
     $("#listado-alumnos tbody button").click(function (e) {
-        alert("HAs pulsado en editar click");
+        alert("Has pulsado en editar click");
     });
     $("#listado-alumnos tbody").on("click", "button", function (e) {
-        alert("HAs pulsado en editar con ON");
+        alert("Has pulsado en editar con ON");
     });
     $("#listado-alumnos thead input").click(function (e) {
         // $("#listado-alumnos tbody input[type='checkbox']").checked(true);
@@ -85,38 +86,50 @@ jQuery(document).ready(function($) {
         return false;
     });
     $("#alumnos div button.btn-info").on("click", function (e) {
-        alert("Has pulsado añadir");
+        //alert("Has pulsado añadir");
         $("#myModal").css("display", "block");
 
-    });
-    $("#alumnos div button.btn-danger").on("click", function (e) {
-        var codigo = "";
-        //0 Recoger el dni de la vista
+        $("#aceptar").click(function (e) {
+            dnies.push($("#dni").val());
+            nombres[$("#dni").val()].push($("#nombre").val());
+            apellidos[$("#dni").val()].push($("#apellidos").val());
+            nUF1841[$("#dni").val()].push($("#nUF1841").val());
+            nUF1842[$("#dni").val()].push($("#nUF1842").val());
+            nUF1843[$("#dni").val()].push($("#nUF1843").val());
+            nUF1844[$("#dni").val()].push($("#nUF1844").val());
+            nUF1845[$("#dni").val()].push($("#nUF1845").val());
+            nUF1846[$("#dni").val()].push($("#nUF1846").val());
+            $("#myModal").css("display", "none");
+        })
 
+    });
+
+
+    $("#alumnos div button.btn-danger").on("click", function (e) {
+        //0 Recoger el dni de la vista
+        var codigo =  $("#listado-alumnos tbody tr input:checked").each(function() {
+            alert($(this).val());
+        });
         //1 Borrado de la vista
         borradoVista();
         //2 Borrado de la BBDD
         borradoBBDD(codigo);
         mostrarNAlumnos();
-       // notaMediaTotal();
+
     });
+    /*
     $("#myModal").click(function (e) {
         $("#myModal").css("display", "none");
     });
+    */
     function mostrarNAlumnos() {
         $("#alumnos div span:eq(0)").text("Número de Alumnos: " + dnies.length)
     }
-
     function borradoVista() {
         $("#listado-alumnos tbody tr input:checked").parents("tr").remove();
     }
-    /*
-    function notaMediaTotal() {
-        var notaMedia = parseFloat((nUF1841[dni] + nUF1842[dni] + nUF1843[dni] + nUF1844[dni] + nUF1845[dni] + nUF1846[dni]) / 6).toFixed(2);
-        var notaMediaTotal = notaMedia / dnies.length;
-        $("#listado-alumnos tfoot tr td:eq(1)").text(notaMediaTotal);
-    }*/
-    //tracear();
+
+
 });
 function calcularLetra(numero){
     var letras = ['T', 'R', 'W', 'A', 'G', 'M', 'Y', 'F', 'P', 'D', 'X', 'B', 'N', 'J', 'Z', 'S', 'Q', 'V', 'H', 'L', 'C', 'K', 'E', 'T'];
@@ -138,8 +151,17 @@ function borradoBBDD(codigo) {
     }
     if (pos != -1) {
         dnies.splice(pos, 1);
-        nombres[codigo] = null;
-        apellidos[codigo] = null;
+        delete nombres[codigo];
+        delete apellidos[codigo];
         //....
     }
+}
+function calcularMedia(numeros) {
+    var media = 0;
+    for(i = 0 ; i < numeros.length ; i++){
+        media = media + numeros[i];
+    }
+    media = parseFloat(media / numeros.length).toFixed(2);
+
+    return media;
 }
