@@ -43,7 +43,7 @@
         <div>
             <button class="btn btn-info">Añadir</button>
             <button class="btn btn-danger">Borrar</button>
-            <span>Total Alumnos:</span>
+            <span>Número de Alumnos</span>
         </div>
         <table id="listado-alumnos">
             <thead>
@@ -90,30 +90,65 @@
             <h2>Titulo</h2>
         </div>
         <div class="modal-body">
-            <!--          <form action="#" method="post" id="formulario">
-      <!--
-                          <div><label for="dniAlumno"></label><input type="text" value="" id="dniAlumno"/></div>
-                          <input type="text" value="" id="nombreAlumno" name="nombreAlumno"/>
-                          <input type="text" value="" id="apellidosAlumno" name="apellidosAlumno"/>
-          -->
-                <div>
-                    <label class="desc" for="nombre">Nombre</label><div><input id="nombre" name="nombre" type="text" class="field text fn" value="" size="8" tabindex="1"></div>
-                </div>
-                <div>
-                    <label class="desc" for="apellidos">Apellidos</label><div><input id="apellidos" name="apellidos" type="text" class="field text fn" value="" size="20" tabindex="1"></div>
-                </div>
-                <div>
-                    <label class="desc" for="dni">D.N.I.</label><div><input id="dni" name="dni" type="text" spellcheck="false" value="" maxlength="9" tabindex="2"></div>
-                </div>
-                <div><label>UF1841</label><div><input type="text" value="" id="nUF1841" name="nUF1841" /></div></div>
-                <div><label>UF1842</label><div><input type="text" value="" id="nUF1842" name="nUF1842" /></div></div>
-                <div><label>UF1843</label><div><input type="text" value="" id="nUF1843" name="nUF1843" /></div></div>
-                <div><label>UF1844</label><div><input type="text" value="" id="nUF1844" name="nUF1844" /></div></div>
-                <div><label>UF1845</label><div><input type="text" value="" id="nUF1845" name="nUF1845" /></div></div>
-                <div><label>UF1846</label><div><input type="text" value="" id="nUF1846" name="nUF1846" /></div></div>
-                <div><button  id="aceptar" name="Aceptar">Aceptar</button> <button id="cancelar" name="Cancelar"> Cancelar</button></div>
 
-        <!--    </form> -->
+
+            <form action="#" id="formAlumno" method="post">
+
+                <!--
+                <div><label for="dn"></label><input type="text" value="" id="dni"/></div>
+                <input type="text" value="" id="nombre" name="nombre"/>
+                <input type="text" value="" id="apellidos" id="nombre"/>
+                --->
+                <div class="flexcontainer">
+                    <label class="desc" for="dni">DNI</label>
+                    <input id="dni" name="dni" type="text" spellcheck="false" class="field text fn" value=""
+                           maxlength="9" autofocus>
+                </div>
+                <div class="flexcontainer">
+                    <label class="desc" for="nombre">Nombre</label>
+                    <input id="nombre" name="nombre" type="text" class="field text fn" value=""
+                           tabindex="1">
+                </div>
+                <div class="flexcontainer">
+                    <label class="desc" for="apellidos">Apellidos</label>
+                    <input id="apellidos" name="apellidos" type="text" class="field text fn" value=""
+                           tabindex="2">
+                </div>
+                <div class="flexcontainer ">
+                    <label class="desc" for="nuf1841">N. UF-1841</label>
+                    <input id="nuf1841" name="nuf1841" type="number" spellcheck="false" value=""
+                           tabindex="3">
+                </div>
+                <div class="flexcontainer ">
+                    <label class="desc" for="nuf1842">N. UF-1842</label>
+                    <input id="nuf1842" name="nuf1842" type="number" spellcheck="false" value=""
+                           tabindex="4">
+                </div>
+                <div class="flexcontainer ">
+                    <label class="desc" for="nuf1843">N. UF-1843</label>
+                    <input id="nuf1843" name="nuf1843" type="number" spellcheck="false" value="" maxlength="9"
+                           tabindex="5">
+                </div>
+                <div class="flexcontainer ">
+                    <label class="desc" for="nuf1844">N. UF-1844</label>
+                    <input id="nuf1844" name="nuf1844" type="number" spellcheck="false" value=""
+                           tabindex="6">
+                </div>
+                <div class="flexcontainer ">
+                    <label class="desc" for="nuf1845">N. UF-1845</label>
+                    <input id="nuf1845" name="nuf1845" type="number" spellcheck="false" value=""
+                           tabindex="7">
+                </div>
+                <div class="flexcontainer ">
+                    <label class="desc" for="nuf1846">N. UF-1846</label>
+                    <input id="nuf1846" name="nuf1846" type="number" spellcheck="false" value=""
+                           tabindex="8">
+                </div>
+                <div>
+                    <button class="btn btn-info">Cancelar</button>
+                    <button class="btn btn-success">Guardar</button>
+                </div>
+            </form>
         </div>
         <!--
         <div class="modal-footer">
