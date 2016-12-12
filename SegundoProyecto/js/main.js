@@ -37,6 +37,24 @@ nUF1846['45751880G'] = 5;
 nUF1846['16087431N'] = 5;
 
 jQuery(document).ready(function($) {
+    var promesaCarga = $.ajax('/alumno',{type: "GET"});
+    promesaCarga.success(function (data){
+        //
+        for(var i = 0; data.length; i++){
+            var dni = data[i].DNI;
+            var id = data[i].id;
+            var nombre = data[i].Nombre;
+            var apellidos = data[i].Apellidos;
+            var notas = new Array();
+            notas['UF1841'] = data[i].notas.UF1841;
+            notas['UF1842'] = data[i].notas["UF1842"];
+            notas['UF1843'] = data[i].notas["UF1843"];
+            notas['UF1844'] = data[i].notas["UF1844"];
+            notas['UF1845'] = data[i].notas["UF1845"];
+            notas['UF1846'] = data[i].notas["UF1846"];
+            addAlumno(dni, nombre, apellidos, notas);
+        }
+    });
     function cargarAlumnos() {
         var cantidad = dnies.length;
         for (var i = 0; i < cantidad; i++) {
@@ -72,7 +90,7 @@ jQuery(document).ready(function($) {
             $("#listado-alumnos tbody input").prop("checked", false);
         }
     });
-    cargarAlumnos();
+    //cargarAlumnos();
     $("a[href='s1'],a[href='#s2']").click(function (e) {
         e.preventDefault();
 
