@@ -1,36 +1,36 @@
 {
 	"type": "Collection",
 	"properties": {
-		"Nombre": {
-			"name": "Nombre",
+		"nombre": {
+			"name": "nombre",
 			"type": "string",
 			"typeLabel": "string",
 			"required": false,
-			"id": "Nombre",
+			"id": "nombre",
 			"order": 0
 		},
-		"Apellidos": {
-			"name": "Apellidos",
+		"apellidos": {
+			"name": "apellidos",
 			"type": "string",
 			"typeLabel": "string",
 			"required": false,
-			"id": "Apellidos",
+			"id": "apellidos",
 			"order": 1
 		},
-		"DNI": {
-			"name": "DNI",
+		"dni": {
+			"name": "dni",
 			"type": "string",
 			"typeLabel": "string",
-			"required": true,
-			"id": "DNI",
+			"required": false,
+			"id": "dni",
 			"order": 2
 		},
-		"Notas": {
-			"name": "Notas",
+		"notas": {
+			"name": "notas",
 			"type": "object",
 			"typeLabel": "object",
 			"required": false,
-			"id": "Notas",
+			"id": "notas",
 			"order": 3
 		}
 	}
