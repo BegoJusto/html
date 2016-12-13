@@ -11,7 +11,7 @@
 
 $.noConflict();
 
-const URL = "http://localhost:2403/alumno";
+const URL = "http://localhost:2403/alumnos";
 
 /*
 var dnies = ["45751880G", "16087431N"];
@@ -42,6 +42,12 @@ nUF1846['16087431N'] = 5;
 */
 
 jQuery(document).ready(function($) {
+    function ajax(opciones) {
+        console.log(opciones);
+        return new Promise(function (resolve, reject) {
+            $.ajax(opciones).done(resolve).fail(reject);
+        });
+    }
     function cargarAlumnos(data) {
         for (var i = 0; i < data.length; i++) {
             var id = data[i].id;
@@ -74,8 +80,10 @@ jQuery(document).ready(function($) {
         alert("Error:" + jqXHR.toString() + textStatus + errorThrown);
     }
 
-    ajax({url: URL, type: "GET"}).then(cargarAlumnos, recogerErrorAjax).catch(function errorHandler(error) {
-
+    ajax({url: URL, type: "GET"})
+        .then(cargarAlumnos, recogerErrorAjax)
+        .catch(function errorHandler(error) {
+            alert(error);
         });
 
 /*    function cargarAlumnos() {
@@ -97,11 +105,19 @@ jQuery(document).ready(function($) {
         mostrarNAlumnos();
     }*/
 
-    $("#listado-alumnos tbody button").click(function (e) {
+    $('#listado-alumnos').find("tbody button").click(function (e) {
+        e.preventDefault();
         alert("HAs pulsado en editar click");
     });
-    $("#listado-alumnos tbody").on("click", "button", function (e) {
-        alert("HAs pulsado en editar con ON");
+    $('#listado-alumnos').find('tbody').on("click", "button", function (e) {
+        e.preventDefault();
+        // alert("HAs pulsado en editar con ON");
+        var datos = {id: '', nombre: '', dni: '', apellidos: '', notas: {}};
+        ajax({url: URL, type: "PUT", data: datos})
+            .then(cargarMensaje("El alumno ha sido modificado"), recogerErrorAjax)
+            .catch(function errorHandler(error) {
+                    alert(error);
+            });
     });
     $("#listado-alumnos thead input").click(function (e) {
         // $("#listado-alumnos tbody input[type='checkbox']").checked(true);
@@ -114,6 +130,7 @@ jQuery(document).ready(function($) {
             $("#listado-alumnos tbody input").prop("checked", false);
         }
     });
+
     //cargarAlumnos();
     $("a[href='s1'],a[href='#s2']").click(function (e) {
         e.preventDefault();
@@ -132,6 +149,32 @@ jQuery(document).ready(function($) {
         //$("#myModal").addClass("");
         //$("#myModal").removeClass("")
     });
+    function cargarMensaje(texto){
+        alert(texto);
+    }
+
+    /*function getById() {
+        $("#listado-alumnos").find("tbody input:checked").each(function (e) {
+            var codigo = $(this).val();
+            console.log(codigo);
+            ajax({url: URL, type: "GET", data: {id: codigo}})
+                .then(cargarMensaje("El alumno ha sido seleccionado"), recogerErrorAjax)
+                .catch(function errorHandler(error) {
+                        alert(error);
+                });
+            var notas = {
+                'UF1841': nuf1841,
+                'UF1842': nuf1842,
+                'UF1843': nuf1843,
+                'UF1844': nuf1844,
+                'UF1845': nuf1845,
+                'UF1846': nuf1846
+            };
+           var data = {nombre: nombre, apellidos: apellido, dni: dni, notas: notas};
+
+        });
+        return data;
+    }*/
 
     $("#alumnos").find("div button.btn-danger").on("click", function (e) {
         e.preventDefault();
@@ -216,7 +259,7 @@ jQuery(document).ready(function($) {
                     cargarMensaje("El alumno ha sido Guardado");
                 }, recogerErrorAjax)
                 .catch(function errorHandler(error) {
-
+                    console.log(error);
                 });
             //   addAlumno(dni, nombre, apellido, notas);
             //añadirlo a la tabla
@@ -226,28 +269,32 @@ jQuery(document).ready(function($) {
             $("#myModal").css("display", "none");
         } else {
             console.log("tiene errores");
+
         }
     });
-    function insertarAlumnoTabla(id,dni, nombre, apellido, notas) {
+    function insertarAlumnoTabla(id, nombre, apellido, notas) {
         var html_text = "<tr>" +
-            "<tr>" +
             "<td align='center'><input type='checkbox' value='" + id + "'/></td>" +
             "<td>" + nombre + "</td>" +
             "<td>" + apellido + "</td>" +
-            "<td>" + notas['UF1841'] + "</td>" +
-            "<td>" + notas['UF1842'] + "</td>" +
-            "<td>" + notas['UF1843'] + "</td>" +
-            "<td>" + notas['UF1844'] + "</td>" +
-            "<td>" + notas['UF1845'] + "</td>" +
-            "<td>" + notas['UF1846'] + "</td>" +//GET ByID (dni)-->
+            "<td>" + notas.UF1841 + "</td>" +
+            "<td>" + notas.UF1842 + "</td>" +
+            "<td>" + notas.UF1843 + "</td>" +
+            "<td>" + notas.UF1844 + "</td>" +
+            "<td>" + notas.UF1845 + "</td>" +
+            "<td>" + notas.UF1846 + "</td>" +//GET ByID (dni)-->
             "<td>" + calcularMedia([notas['UF1841'], notas['UF1842'], notas['UF1843'], notas['UF1844'], notas['UF1845'], notas['UF1846']]).toFixed(2) + "</td>" +
             "<td align='center'><button>Editar</button></td>" +
             "</tr>";
-        $('#listado-alumnos tbody').append(html_text);
+        $('#listado-alumnos').find('tbody').append(html_text);
+        //console.log(html_text);
     }
-    function mostrarNAlumnos() {
-        $("#alumnos div span:eq(0)").text("Número de Alumnos: " + dnies.length)
+    function mostrarNAlumnos(longitud) {
+        //   var trs = $("#listado-alumnos tbody tr").length;
+
+        $('#alumnos').find('div span:eq(0)').text("Número de Alumnos: " + longitud);
     }
+
 
     function borradoVista() {
         $("#listado-alumnos tbody tr input:checked").parents("tr").remove();
@@ -304,7 +351,7 @@ function calcularMedia(numeros) {
     var media = 0;
     var len = numeros.length
     for (var i = 0; i < len; i++) {
-        media += numeros[i];
+        media += parseInt(numeros[i]) ;
     }
     media = media / len;
     return media;
