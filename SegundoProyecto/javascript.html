@@ -14,6 +14,43 @@
     <script src="js/vendor/jquery-1.12.0.min.js"></script>
     <script src="js/plugins.js"></script>
     <script src="js/main.js" ></script>
+    <script>
+        function cargarCoordenadas() {
+            var lon = 0;
+            var lat = 0;
+            navigator.geolocation.getCurrentPosition(function(objPosition)
+            {
+                lon = objPosition.coords.longitude;
+                lat = objPosition.coords.latitude;
+            }, function(objPositionError)
+            {
+                switch (objPositionError.code)
+                {
+                    case objPositionError.PERMISSION_DENIED:
+                        //   content.innerHTML = "No se ha permitido el acceso a la posición del usuario.";
+                        break;
+                    case objPositionError.POSITION_UNAVAILABLE:
+                        //  content.innerHTML = "No se ha podido acceder a la información de su posición.";
+                        break;
+                    case objPositionError.TIMEOUT:
+                        //content.innerHTML = "El servicio ha tardado demasiado tiempo en responder.";
+                        break;
+                    default:
+                    // content.innerHTML = "Error desconocido.";
+                }
+            }, {
+                maximumAge: 75000,
+                timeout: 15000
+            });
+            return {lat:lat,lon:lon};
+        }
+        function initMap() {
+            var posicion = cargarCoordenadas();
+        }
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB9u2vCh3u8JmHlIYcsXuqSgg5eMcYOUV8&callback=initMap" async defer></script>
+
+
 </head>
 <body>
 <!--[if lt IE 8]>
