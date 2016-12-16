@@ -255,6 +255,9 @@ function validarAlumno(alumno) {
         // mensajes de error
         valido = false;
     }
+    if (!validarfNacimiento(alumno.fNacimiento)){
+        valido = false;
+    }
     if (!validarTexto(alumno.nombre, 3)) {
         valido = false;
     }
@@ -333,6 +336,23 @@ function validarTexto(texto, nLen) {
 function validarNotas(nota) {
     var valido = false;
     if (nota == '' || (nota >= 0 && nota <= 10)) {
+        valido = true;
+    }
+    return valido;
+}
+function parsefNacimiento(string){
+    var date = new Date(string);
+    return date;
+}
+function validarfNacimiento(date) {
+    var valido = false;
+    var newDate = parsefNacimiento(date);
+    const jubilacion = 65;
+    const menor = 18;
+    var hoy = new Date();
+    var anoHoy = hoy.getFullYear();
+    var anoNacimiento = newDate.getFullYear();
+    if((anoNacimiento + menor) <= anoHoy  & (anoNacimiento + jubilacion) >= anoHoy){
         valido = true;
     }
     return valido;
