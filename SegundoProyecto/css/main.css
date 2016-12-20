@@ -625,7 +625,12 @@ tr button {
     display: block;
     margin: auto;
 }
-
+/*** MAPA ***/
+#mapa{
+    color: black;
+    min-height: 500px;
+    width: 100%;
+}
 /**** MEDIA QUERIES ****/
 @media (min-width: 320px) {
     ul.navigation {

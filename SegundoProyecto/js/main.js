@@ -2,11 +2,34 @@ $.noConflict();
 const URL = "http://localhost:2403/alumnos";
 var nAlumno = 0;
 jQuery(document).ready(function($) {
+    var $tabla = $('#listado-alumnos');
+    var $seccionAlumno = $("#alumnos");
+    var $formAlumno = $('#formAlumno');
+    var $modal = $('#myModal');
     function ajax(opciones) {
         return new Promise(function (resolve, reject) {
             $.ajax(opciones).done(resolve).fail(reject);
         });
     }
+    function getPreciseLocation() {
+        return new Promise(function (resolve, reject) {
+            navigator.geolocation.getCurrentPosition(function (position) {
+                resolve({latitude: position.coords.latitude, longitude: position.coords.longitude});
+            });
+        });
+    }
+
+
+    getPreciseLocation()
+        .then(function (results) {
+            cargarMapa("Gran Via 85, Bilbao, España");
+        })
+        .catch(function errorHandler(error) {
+            console.log(error);
+        });
+
+
+
 
     function parseData(data) {
         var datos = {};
@@ -16,6 +39,7 @@ jQuery(document).ready(function($) {
         datos.apellidos = data.apellidos;
         datos.fNacimiento = data.fNacimiento;
         datos.notas = {};
+        datos.direccion = data.direccion;
 
         if (typeof data.notas !== 'undefined') {
             datos.notas['UF1841'] = data.notas.UF1841;
@@ -32,23 +56,25 @@ jQuery(document).ready(function($) {
             datos.notas['UF1845'] = "";
             datos.notas['UF1846'] = "";
         }
+
+
+
         return datos;
     }
 
     function calcularMediaClase() {
         var valor = 0;
-        var media = 0;
-
-        $('#listado-alumnos').find(".media").each(function () {
-            var nota = parseInt($(this).text()) || -1;
+        var media;
+        var n = 0;
+        $tabla.find(".media").each(function () {
+            var nota = parseFloat($(this).text()) || -1;
             if (nota > -1) {
                 valor += nota;
-                media++;
+                n++;
             }
         });
-        media = valor / media;
-
-        $("#listado-alumnos").find("tfoot tr td:eq(1)").text(media.toFixed(2))
+        media = valor / n;
+        $tabla.find("tfoot tr td:eq(1)").text(media.toFixed(2))
     }
 
     function cargarAlumnos(data) {
@@ -63,19 +89,13 @@ jQuery(document).ready(function($) {
     function cargarMensaje(mensaje) {
         alert(mensaje);
     }
-
-    /*
-     function recogerErrorAjax(jqXHR, textStatus, errorThrown) {
-     alert("Error:" + jqXHR.toString() + textStatus + errorThrown);
-     }
-     function parseAlumno(data) {
-     }
-     */
     function datosToHTML(datos) {
         var media = calcularMedia([datos.notas['UF1841'], datos.notas['UF1842'], datos.notas['UF1843'], datos.notas['UF1844'], datos.notas['UF1845'], datos.notas['UF1846']]);
         if (media != '') {
             media = media.toFixed(2);
         }
+        var enlace = 'javascript:cargarMapa("'+datos.direccion+'")';
+        //console.log(enlace);
         var html_text = "<tr>" +
             "<td align='center'><input type='checkbox' value='" + datos.id + "'/></td>" +
             "<td>" + datos.nombre + "</td>" +
@@ -88,15 +108,16 @@ jQuery(document).ready(function($) {
             "<td>" + datos.notas.UF1846 + "</td>" +//GET ByID (dni)-->
             "<td class='media'>" + media + "</td>" +
             "<td align='center'><button>Editar</button></td>" +
+            "<td align='center'><a href='"+enlace+"'>Ver Domicilio</a></td>"
             "</tr>";
-        $('#listado-alumnos').find('tbody').append(html_text);
+        $tabla.find('tbody').append(html_text);
     }
     ajax({url: URL, type: "GET"})
         .then(cargarAlumnos)
         .then(mostrarNAlumnos)
         .then(calcularMediaClase)
         .catch(function errorHandler(error) {
-            alert(error);
+            console.log(error);
         });
     function datosToModal(alumno) {
         $("input#id").val(alumno.id);
@@ -111,27 +132,25 @@ jQuery(document).ready(function($) {
         $("input#nuf1845").val(alumno.notas.UF1845);
         $("input#nuf1846").val(alumno.notas.UF1846);
     }
-    $('#listado-alumnos').find('tbody').on("click", "button", function (e) {
+
+    $tabla.find('tbody').on("click", "button", function (e) {
         e.preventDefault();
-        // alert("HAs pulsado en editar con ON");
         var id = $(this).parent().siblings("td").find("input").val();
         ajax({url: URL, type: "GET", data: {id: id}})
             .then(function (data) {
                 var datos = parseData(data);
                 datosToModal(datos);
-                $("#myModal").css("display", "block");
+                $modal.css("display", "block");
             })
             .catch(function errorHandler(error) {
-                alert(error);
+                console.log(error);
             });
 
 
     });
-    $("#listado-alumnos thead input").click(function (e) {
-        // $("#listado-alumnos tbody input[type='checkbox']").checked(true);
-        //attr vs (prop e is) ---> tiempo de carga
-        // prop vs is ---> prop identifica elementos cargados dinamicamente mientras is no
-        var $input = $("#listado-alumnos").find('tbody input');
+    $tabla.find("thead input").click(function (e) {
+        e.preventDefault();
+        var $input = $tabla.find('tbody input');
         if ($(this).prop("checked")) {
             $input.prop("checked", true);
         } else {
@@ -139,21 +158,22 @@ jQuery(document).ready(function($) {
         }
     });
     //añadir
-    $("#alumnos").find('div button.btn-info').on("click", function (e) {
+    $seccionAlumno.find('div button.btn-info').on("click", function (e) {
         e.preventDefault();
-        $('#formAlumno').find('input').val("");
-        $("#myModal").css("display", "block");
+        $formAlumno.find('input').val("");
+        $formAlumno.find(".error").text('');
+        $modal.css("display", "block");
     });
     //borrar
-    $("#alumnos").find("div button.btn-danger").on("click", function (e) {
+    $seccionAlumno.find("div button.btn-danger").on("click", function (e) {
         e.preventDefault();
         var nAlumnosborrados = 0;
         //0 Recoger el dni de la vista
-        $("#listado-alumnos tbody input:checked").each(function () {
+        $tabla.find("tbody input:checked").each(function () {
             var codigo = $(this).val();
             ajax({url: URL, type: "DELETE", data: {id: codigo}})
                 .catch(function errorHandler(error) {
-                    cargarMensaje(error.toString());
+                    console.log(error);
                 });
             nAlumnosborrados += 1;
         });
@@ -161,9 +181,12 @@ jQuery(document).ready(function($) {
         calcularMediaClase();
         mostrarNAlumnos(-nAlumnosborrados);
     });
+
+
+    // $modal.find("")
     $("#myModal button.btn-info,#myModal .close").click(function (e) {
         e.preventDefault();
-        $("#myModal").css("display", "none");
+        $modal.css("display", "none");
     });
     function modalToData() {
         var datos = {};
@@ -183,13 +206,12 @@ jQuery(document).ready(function($) {
     }
 
     function updateTable(alumno) {
-        var $td = $('#listado-alumnos').find("tbody input[value='" + alumno.id + "']").parents("tr");
-        console.log($td);
+        var $td = $tabla.find("tbody input[value='" + alumno.id + "']").parents("tr");
+
         var media = calcularMedia([alumno.notas['UF1841'], alumno.notas['UF1842'], alumno.notas['UF1843'], alumno.notas['UF1844'], alumno.notas['UF1845'], alumno.notas['UF1846']]);
         if (media != '') {
             media = media.toFixed(2);
         }
-
         $td.find("td:nth-child(2)").text(alumno.nombre);
         $td.find("td:nth-child(3)").text(alumno.apellidos);
         $td.find("td:nth-child(4)").text(alumno.notas.UF1841);
@@ -200,11 +222,12 @@ jQuery(document).ready(function($) {
         $td.find("td:nth-child(9)").text(alumno.notas.UF1846);
         $td.find("td:nth-child(10)").text(media);
     }
-    $('#myModal').find(".btn-success").on("click", function (e) {
+
+    $modal.find(".btn-success").on("click", function (e) {
         e.preventDefault();
         var alumno = modalToData();
         if (validarAlumno(alumno)) {
-            var mensaje = "";
+
             if (alumno.id == "") {//create
                 ajax({url: URL, type: "POST", data: alumno})
                     .then(function (data) {
@@ -215,7 +238,7 @@ jQuery(document).ready(function($) {
                     .then(mostrarNAlumnos(1))
                     .then(calcularMediaClase)
                     .catch(function errorHandler(error) {
-                        cargarMensaje(error.toString());
+                        console.log(error);
                     });
 
             } else {//update
@@ -223,7 +246,6 @@ jQuery(document).ready(function($) {
                     .then(function (data) {
                         var datos = parseData(data);
                         updateTable(datos);
-                        //     console.log(datos)
                     })
                     .then(cargarMensaje("El alumno ha sido Guardado"))
                     .then(calcularMediaClase)
@@ -231,7 +253,7 @@ jQuery(document).ready(function($) {
                         cargarMensaje(error.toString());
                     });
             }
-            $("#myModal").css("display", "none");
+            $modal.css("display", "none");
         } else {
             console.log("tiene errores");
         }
@@ -239,51 +261,64 @@ jQuery(document).ready(function($) {
     function mostrarNAlumnos(longitud) {
         longitud = typeof longitud === 'undefined' ? 0 : longitud;
         nAlumno += longitud;
-        $('#alumnos').find('div span:eq(0)').text("Número de Alumnos: " + nAlumno);
+        $seccionAlumno.find('div span:eq(0)').text("Número de Alumnos: " + nAlumno);
     }
     function borradoVista() {
-        $('#listado-alumnos').find('tbody tr input:checked').parents('tr').remove();
+        $tabla.find('tbody tr input:checked').parents('tr').remove();
     }
-    $("#formAlumno").submit(function (e) {
+
+    $formAlumno.submit(function (e) {
         e.preventDefault();
         return false;
-    })
+    });
+    function validarAlumno(alumno) {
+        var valido = true;
+        if (!validarDNI(alumno.dni)) {
+            // mensajes de error
+            valido = false;
+            $("#dni").siblings("p.error").text("Dni incorrecto");
+        }
+        if (!validarFechaNacimiento(alumno.fNacimiento)) {
+            valido = false;
+            $("#fNacimiento").siblings("p.error").text("Fecha de Nacimiento no valida");
+        }
+        if (!validarTexto(alumno.nombre, 3)) {
+            valido = false;
+            $("#nombre").siblings("p.error").text("Nombre no valido");
+        }
+        if (!validarTexto(alumno.apellidos, 7)) {
+            valido = false;
+            $("#apellidos").siblings("p.error").text("Apellido no valido");
+        }
+        if (!validarNotas(alumno.notas.UF1841)) {
+            valido = false;
+            $("#nuf1841").siblings("p.error").text("Nota no valida");
+        }
+        if (!validarNotas(alumno.notas.UF1842)) {
+            valido = false;
+            $("#nuf1842").siblings("p.error").text("Nota no valida");
+        }
+        if (!validarNotas(alumno.notas.UF1843)) {
+            valido = false;
+            $("#nuf1843").siblings("p.error").text("Nota no valida");
+        }
+        if (!validarNotas(alumno.notas.UF1844)) {
+            valido = false;
+            $("#nuf1844").siblings("p.error").text("Nota no valida");
+        }
+        if (!validarNotas(alumno.notas.UF1845)) {
+            valido = false;
+            $("#nuf1845").siblings("p.error").text("Nota no valida");
+        }
+        if (!validarNotas(alumno.notas.UF1846)) {
+            valido = false;
+            $("#nuf1846").siblings("p.error").text("Nota no valida");
+        }
+        return valido;
+    }
 });
-function validarAlumno(alumno) {
-    var valido = true;
-    if (!validarDNI(alumno.dni)) {
-        // mensajes de error
-        valido = false;
-    }
-    if (!validarfNacimiento(alumno.fNacimiento)){
-        valido = false;
-    }
-    if (!validarTexto(alumno.nombre, 3)) {
-        valido = false;
-    }
-    if (!validarTexto(alumno.apellidos, 7)) {
-        valido = false;
-    }
-    if (!validarNotas(alumno.notas.UF1841)) {
-        valido = false;
-    }
-    if (!validarNotas(alumno.notas.UF1842)) {
-        valido = false;
-    }
-    if (!validarNotas(alumno.notas.UF1843)) {
-        valido = false;
-    }
-    if (!validarNotas(alumno.notas.UF1844)) {
-        valido = false;
-    }
-    if (!validarNotas(alumno.notas.UF1845)) {
-        valido = false;
-    }
-    if (!validarNotas(alumno.notas.UF1846)) {
-        valido = false;
-    }
-    return valido;
-}
+
+
 function calcularLetra(numero){
     var letras = ['T', 'R', 'W', 'A', 'G', 'M', 'Y', 'F', 'P', 'D', 'X', 'B', 'N', 'J', 'Z', 'S', 'Q', 'V', 'H', 'L', 'C', 'K', 'E', 'T'];
     var letraCalculada;
@@ -357,3 +392,40 @@ function validarfNacimiento(date) {
     }
     return valido;
 }
+function cargarMapa(direccion) {
+    //  console.log(coordenadas);
+    var directionsService = new google.maps.DirectionsService();
+    var directionsDisplay = new google.maps.DirectionsRenderer();
+    const ipartek = {latitude:43.256398,longitude:-2.913550};
+    var element = document.getElementById('mapa');
+    var myCenter = new google.maps.LatLng(ipartek.latitude, ipartek.longitude);
+    var mapOptions = {
+        center: myCenter,
+        zoom: 14,
+        scrollwheel: false
+    };
+    var infowindow = new google.maps.InfoWindow({
+        content: "Aquí estamos"
+    });
+    var map = new google.maps.Map(element, mapOptions);
+    var marker = new google.maps.Marker({position: myCenter});
+  //  marker.setMap(map);
+  //  infowindow.open(map, marker);
+    directionsDisplay.setMap(map);
+    directionsDisplay.setPanel(document.getElementById("instrucciones"));
+
+    var request = {
+        origin:direccion,
+        destination:myCenter,
+        travelMode: google.maps.TravelMode.WALKING
+    };
+
+    directionsService.route(request, function(response, status) {
+        if (status == google.maps.DirectionsStatus.OK) {
+            directionsDisplay.setDirections(response);
+        }
+    });
+
+
+}
+

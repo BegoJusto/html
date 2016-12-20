@@ -40,6 +40,14 @@
 			"required": false,
 			"id": "fNacimiento",
 			"order": 4
+		},
+		"direccion": {
+			"name": "direccion",
+			"type": "string",
+			"typeLabel": "string",
+			"required": false,
+			"id": "direccion",
+			"order": 5
 		}
 	}
 }
