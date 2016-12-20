@@ -29,8 +29,6 @@ jQuery(document).ready(function($) {
         });
 
 
-
-
     function parseData(data) {
         var datos = {};
         datos.id = data.id;
@@ -56,9 +54,6 @@ jQuery(document).ready(function($) {
             datos.notas['UF1845'] = "";
             datos.notas['UF1846'] = "";
         }
-
-
-
         return datos;
     }
 
